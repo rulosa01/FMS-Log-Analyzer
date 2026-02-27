@@ -12,7 +12,7 @@ export default function AccessLogView({ entries }) {
 
   // User activity summary
   const userStats = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       if (!e.clientName) return;
       // Normalize client name by removing the session number suffix
@@ -36,7 +36,7 @@ export default function AccessLogView({ entries }) {
 
   // Client type breakdown
   const clientTypeBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.filter(e => e.action === 'connect').forEach(e => {
       let type = 'Unknown';
       if (e.appVersion) {
@@ -55,7 +55,7 @@ export default function AccessLogView({ entries }) {
 
   // Database popularity
   const dbPopularity = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.filter(e => e.action === 'open_db' && e.database).forEach(e => {
       if (!map[e.database]) map[e.database] = { name: e.database, opens: 0, users: new Set() };
       map[e.database].opens++;

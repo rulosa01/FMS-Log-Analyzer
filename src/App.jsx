@@ -39,7 +39,7 @@ function App() {
 
   const handleDataLoaded = useCallback((results) => {
     // Merge entries by type (if multiple files of same type)
-    const merged = {};
+    const merged = Object.create(null);
     results.forEach(r => {
       if (!merged[r.type]) {
         merged[r.type] = { type: r.type, entries: [], filenames: [], totalSize: 0 };

@@ -22,7 +22,7 @@ export default function FmdapiView({ entries }) {
 
   // IP breakdown
   const ipSummary = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const ip = e.ip || 'Unknown';
       if (!map[ip]) map[ip] = { ip, requests: 0, errors: 0, accounts: new Set(), databases: new Set(), methods: new Set() };
@@ -39,7 +39,7 @@ export default function FmdapiView({ entries }) {
 
   // Account breakdown
   const accountSummary = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const acct = e.account || 'Unknown';
       if (!map[acct]) map[acct] = { account: acct, requests: 0, errors: 0, ips: new Set(), databases: new Set(), methods: new Set() };
@@ -56,7 +56,7 @@ export default function FmdapiView({ entries }) {
 
   // Database breakdown
   const dbSummary = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const db = e.database || 'Unknown';
       if (!map[db]) map[db] = { database: db, requests: 0, errors: 0, accounts: new Set(), ips: new Set(), methods: new Set() };
@@ -72,7 +72,7 @@ export default function FmdapiView({ entries }) {
   }, [entries]);
 
   const methodBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const m = e.method || 'Unknown';
       map[m] = (map[m] || 0) + 1;
@@ -81,7 +81,7 @@ export default function FmdapiView({ entries }) {
   }, [entries]);
 
   const errorCodeBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.filter(e => e.errorCode > 0).forEach(e => {
       const key = e.errorCode;
       if (!map[key]) map[key] = { code: key, count: 0 };

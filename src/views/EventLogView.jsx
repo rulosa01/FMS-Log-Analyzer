@@ -92,7 +92,7 @@ export default function EventLogView({ entries }) {
   }, [categorized, filterSeverity, filterCategory]);
 
   const errorBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.filter(e => e.severity === 'Error').forEach(e => {
       const key = e.eventId;
       if (!map[key]) map[key] = { eventId: key, count: 0, sample: e.description };
@@ -102,7 +102,7 @@ export default function EventLogView({ entries }) {
   }, [entries]);
 
   const scheduleStats = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     categorized.forEach(e => {
       const m = e.description.match(/Schedule "([^"]+)"/);
       if (!m) return;

@@ -8,7 +8,7 @@ import { formatTimestamp, formatDuration, formatBytes } from '../utils/dateUtils
 export default function ClientStatsView({ entries }) {
   // Aggregate per-client stats
   const clientSummary = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const name = e.clientName || 'Unknown';
       if (!map[name]) map[name] = {
@@ -33,7 +33,7 @@ export default function ClientStatsView({ entries }) {
 
   // Time series: per-interval totals
   const timeSeriesData = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const key = e.timestampRaw;
       if (!map[key]) map[key] = { timestamp: e.timestamp, totalCalls: 0, totalElapsed: 0, totalBytesIn: 0, totalBytesOut: 0 };

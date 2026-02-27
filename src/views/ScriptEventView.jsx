@@ -8,7 +8,7 @@ import { formatTimestamp } from '../utils/dateUtils.js';
 export default function ScriptEventView({ entries }) {
   // Error code breakdown
   const errorBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const code = e.fmErrorCode ?? e.errorCode ?? 'Unknown';
       if (!map[code]) map[code] = { code, count: 0, totalOccurrences: 0 };
@@ -20,7 +20,7 @@ export default function ScriptEventView({ entries }) {
 
   // Script breakdown
   const scriptBreakdown = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const key = e.scriptName || 'Unknown';
       if (!map[key]) map[key] = { script: key, database: e.database, count: 0, errors: new Set() };

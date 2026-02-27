@@ -3,24 +3,41 @@ import { Upload, FileText, X, Sparkles, Shield, AlertCircle, Heart, ExternalLink
 import { parseLogFile, LOG_TYPE_LABELS } from '../parsers/index.js';
 import { detectLogType } from '../parsers/logDetector.js';
 
+const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200 MB
+const ALLOWED_EXTENSIONS = /\.(log|txt)$/i;
+
 export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
 
-  const handleFileSelect = useCallback((e) => {
-    const newFiles = Array.from(e.target.files || []);
-    setFiles(prev => [...prev, ...newFiles]);
-    setError(null);
+  const validateFiles = useCallback((newFiles) => {
+    const valid = [];
+    for (const file of newFiles) {
+      if (!ALLOWED_EXTENSIONS.test(file.name)) {
+        setError(`"${file.name}" is not a .log or .txt file`);
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`"${file.name}" exceeds 200 MB limit (${(file.size / 1024 / 1024).toFixed(0)} MB)`);
+        continue;
+      }
+      valid.push(file);
+    }
+    return valid;
   }, []);
+
+  const handleFileSelect = useCallback((e) => {
+    const valid = validateFiles(Array.from(e.target.files || []));
+    if (valid.length) setFiles(prev => [...prev, ...valid]);
+  }, [validateFiles]);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
-    const newFiles = Array.from(e.dataTransfer.files || []);
-    setFiles(prev => [...prev, ...newFiles]);
-    setError(null);
-  }, []);
+    const valid = validateFiles(Array.from(e.dataTransfer.files || []));
+    if (valid.length) setFiles(prev => [...prev, ...valid]);
+  }, [validateFiles]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();

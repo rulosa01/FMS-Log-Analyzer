@@ -16,7 +16,7 @@ export default function TopCallStatsView({ entries }) {
 
   // Operation breakdown
   const operationStats = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const op = e.operation || 'Unknown';
       if (!map[op]) map[op] = { operation: op, count: 0, totalElapsed: 0, totalWait: 0, totalIO: 0, maxElapsed: 0 };
@@ -31,7 +31,7 @@ export default function TopCallStatsView({ entries }) {
 
   // Client hotspots
   const clientHotspots = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const name = e.clientName || 'Unknown';
       if (!map[name]) map[name] = { client: name, count: 0, totalElapsed: 0, maxElapsed: 0 };
@@ -44,7 +44,7 @@ export default function TopCallStatsView({ entries }) {
 
   // Target analysis
   const targetStats = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const { database, object } = parseTarget(e.target);
       const key = e.target || 'Unknown';
@@ -57,7 +57,7 @@ export default function TopCallStatsView({ entries }) {
 
   // Time series data — aggregate by timestamp (collection interval)
   const timeSeriesData = useMemo(() => {
-    const map = {};
+    const map = Object.create(null);
     entries.forEach(e => {
       const key = e.timestampRaw;
       if (!map[key]) map[key] = { timestamp: e.timestamp, maxElapsed: 0, totalElapsed: 0, count: 0, maxWait: 0, maxIO: 0 };
