@@ -27,6 +27,7 @@ export default function DateRangeFilter({ startDate, endDate, onStartChange, onE
 
     items.push({ label: 'Last 24h', start: hoursAgo(24) });
     items.push({ label: 'Last 7d', start: daysAgo(7) });
+    items.push({ label: 'Last 14d', start: daysAgo(14) });
     items.push({ label: 'Last 30d', start: daysAgo(30) });
     items.push({ label: 'All', start: null });
 

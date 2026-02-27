@@ -251,48 +251,53 @@ export default function EventLogView({ entries }) {
           onClick={() => handleStatClick('schedules')} active={filterCategory === 'schedule_start'} />
       </div>
 
-      {/* Server Info */}
-      {serverInfo && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-2.5 flex items-center gap-4 text-xs flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <Server className="w-3.5 h-3.5 text-blue-500" />
-            <span className="text-blue-700 dark:text-blue-300 font-medium">Server Session</span>
-          </div>
-          {serverInfo.serverName && (
-            <span className="text-gray-600 dark:text-gray-300">Host: <strong>{serverInfo.serverName}</strong></span>
-          )}
-          {serverInfo.version && (
-            <span className="text-gray-600 dark:text-gray-300">FMS: <strong>v{serverInfo.version}</strong></span>
-          )}
-          {serverInfo.lastStart && (
-            <span className="text-gray-600 dark:text-gray-300">Last Start: <strong>{formatTimestamp(serverInfo.lastStart)}</strong></span>
-          )}
-        </div>
-      )}
-
-      {/* Critical Alerts */}
-      {criticalAlerts.length > 0 && (
-        <div className="space-y-2">
-          {criticalAlerts.map((alert, i) => (
-            <div key={i} className={`border rounded-xl p-3 ${
-              alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800' :
-              alert.severity === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-800' :
-              'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                {alert.severity === 'critical' ? <Zap className="w-4 h-4 text-red-500" /> :
-                 alert.severity === 'warning' ? <AlertTriangle className="w-4 h-4 text-amber-500" /> :
-                 <Info className="w-4 h-4 text-blue-500" />}
-                <span className={`text-xs font-semibold ${
-                  alert.severity === 'critical' ? 'text-red-700 dark:text-red-300' :
-                  alert.severity === 'warning' ? 'text-amber-700 dark:text-amber-300' :
-                  'text-blue-700 dark:text-blue-300'
-                }`}>{alert.title}</span>
+      {/* Analysis panels — hidden when a stat card filter is active */}
+      {filterSeverity === 'all' && filterCategory === 'all' && (
+        <>
+          {/* Server Info */}
+          {serverInfo && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-2.5 flex items-center gap-4 text-xs flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <Server className="w-3.5 h-3.5 text-blue-500" />
+                <span className="text-blue-700 dark:text-blue-300 font-medium">Server Session</span>
               </div>
-              <p className="text-[11px] text-gray-600 dark:text-gray-400 ml-6">{alert.detail}</p>
+              {serverInfo.serverName && (
+                <span className="text-gray-600 dark:text-gray-300">Host: <strong>{serverInfo.serverName}</strong></span>
+              )}
+              {serverInfo.version && (
+                <span className="text-gray-600 dark:text-gray-300">FMS: <strong>v{serverInfo.version}</strong></span>
+              )}
+              {serverInfo.lastStart && (
+                <span className="text-gray-600 dark:text-gray-300">Last Start: <strong>{formatTimestamp(serverInfo.lastStart)}</strong></span>
+              )}
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* Critical Alerts */}
+          {criticalAlerts.length > 0 && (
+            <div className="space-y-2">
+              {criticalAlerts.map((alert, i) => (
+                <div key={i} className={`border rounded-xl p-3 ${
+                  alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800' :
+                  alert.severity === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-800' :
+                  'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                }`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    {alert.severity === 'critical' ? <Zap className="w-4 h-4 text-red-500" /> :
+                     alert.severity === 'warning' ? <AlertTriangle className="w-4 h-4 text-amber-500" /> :
+                     <Info className="w-4 h-4 text-blue-500" />}
+                    <span className={`text-xs font-semibold ${
+                      alert.severity === 'critical' ? 'text-red-700 dark:text-red-300' :
+                      alert.severity === 'warning' ? 'text-amber-700 dark:text-amber-300' :
+                      'text-blue-700 dark:text-blue-300'
+                    }`}>{alert.title}</span>
+                  </div>
+                  <p className="text-[11px] text-gray-600 dark:text-gray-400 ml-6">{alert.detail}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Filters */}
@@ -327,8 +332,8 @@ export default function EventLogView({ entries }) {
         </div>
       </div>
 
-      {/* Error Breakdown */}
-      {errorBreakdown.length > 0 && (
+      {/* Error Breakdown — hidden when a specific stat card filter is active */}
+      {errorBreakdown.length > 0 && filterSeverity === 'all' && filterCategory === 'all' && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-red-700 dark:text-red-300 mb-2">Error Breakdown by Event ID</h3>
           <div className="space-y-1">

@@ -128,7 +128,7 @@ export default function AccessLogView({ entries }) {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatCard label="Total Entries" value={stats.totalEntries.toLocaleString()} color="blue" icon={Wifi}
-          onClick={() => setFilterAction(filterAction === 'all' ? 'all' : 'all')} active={filterAction === 'all'} />
+          onClick={() => setFilterAction('all')} active={filterAction === 'all'} />
         <StatCard label="Unique Users" value={stats.uniqueUsers} color="emerald" icon={Users} />
         <StatCard label="Connections" value={stats.totalConnections.toLocaleString()} color="violet" icon={Monitor}
           onClick={() => setFilterAction(filterAction === 'connect' ? 'all' : 'connect')} active={filterAction === 'connect'} />
@@ -138,48 +138,49 @@ export default function AccessLogView({ entries }) {
           onClick={() => setFilterAction(filterAction === 'denied' ? 'all' : 'denied')} active={filterAction === 'denied'} />
       </div>
 
-      {/* Charts row */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* Client Type Breakdown */}
-        {clientTypeBreakdown.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Client Type Breakdown</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={clientTypeBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
-                  {clientTypeBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+      {/* Charts + User Activity — hidden when a stat card filter is active */}
+      {filterAction === 'all' && (
+        <>
+          <div className="grid md:grid-cols-2 gap-4">
+            {clientTypeBreakdown.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Client Type Breakdown</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={clientTypeBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                      {clientTypeBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
 
-        {/* Database Popularity */}
-        {dbPopularity.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Top Databases by Opens</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={dbPopularity.slice(0, 10)} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 10 }} />
-                <Tooltip />
-                <Bar dataKey="opens" fill="#3b82f6" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {dbPopularity.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Top Databases by Opens</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={dbPopularity.slice(0, 10)} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 10 }} />
+                    <Tooltip />
+                    <Bar dataKey="opens" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* User Activity Summary */}
-      <DataTable
-        data={userStats}
-        columns={userColumns}
-        title="User Activity Summary"
-        exportFilename="access-users.csv"
-        defaultSortKey="connections"
-      />
+          <DataTable
+            data={userStats}
+            columns={userColumns}
+            title="User Activity Summary"
+            exportFilename="access-users.csv"
+            defaultSortKey="connections"
+          />
+        </>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-2">
@@ -198,6 +199,24 @@ export default function AccessLogView({ entries }) {
           </button>
         ))}
       </div>
+
+      {/* Active filter indicator */}
+      {filterAction !== 'all' && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+          <span className="text-blue-600 dark:text-blue-400 font-medium">
+            Showing: {filterAction.replace(/_/g, ' ')}
+          </span>
+          <span className="text-blue-400 dark:text-blue-500">
+            ({filtered.length.toLocaleString()} of {entries.length.toLocaleString()})
+          </span>
+          <button
+            onClick={() => setFilterAction('all')}
+            className="ml-auto text-xs text-blue-500 hover:text-blue-600 font-medium"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
 
       {/* Main table */}
       <DataTable

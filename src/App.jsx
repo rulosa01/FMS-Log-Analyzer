@@ -57,7 +57,7 @@ function App() {
 
     setLogData(merged);
 
-    // Auto-set date range to last 7 days to keep the browser responsive
+    // Auto-set date range to last 14 days to keep the browser responsive
     let maxTs = null;
     Object.values(merged).forEach(m => {
       for (const e of m.entries) {
@@ -69,7 +69,7 @@ function App() {
       const toLocal = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
       const end = new Date(maxTs);
       const start = new Date(maxTs);
-      start.setDate(start.getDate() - 7);
+      start.setDate(start.getDate() - 14);
       setDateEnd(toLocal(end));
       setDateStart(toLocal(start));
     }

@@ -207,196 +207,199 @@ export default function TopCallStatsView({ entries }) {
         <StatCard label="Unique Clients" value={globalStats.uniqueClients} color="emerald" icon={Users} />
       </div>
 
-      {/* Performance Insights */}
-      {entries.length > 0 && (
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Slow call analysis */}
-          <div className={`border rounded-xl p-4 ${
-            performanceInsights.verySlowCalls > 0
-              ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-              : performanceInsights.slowCalls > 0
-                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
-                : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
-          }`}>
-            <div className="flex items-center gap-2 mb-2">
-              {performanceInsights.slowCalls > 0
-                ? <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                : <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Performance Analysis</h3>
+      {/* Analysis panels — hidden when a stat card filter/sort is active */}
+      {filterOperation === 'all' && !sortOverride && (
+        <>
+          {/* Performance Insights */}
+          {entries.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className={`border rounded-xl p-4 ${
+                performanceInsights.verySlowCalls > 0
+                  ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                  : performanceInsights.slowCalls > 0
+                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                    : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  {performanceInsights.slowCalls > 0
+                    ? <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    : <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Performance Analysis</h3>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Slow calls (&gt;250ms)</span>
+                    <span className={`font-medium ${performanceInsights.slowCalls > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                      {performanceInsights.slowCalls.toLocaleString()} ({performanceInsights.slowCallPct}%)
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Very slow calls (&gt;1s)</span>
+                    <span className={`font-medium ${performanceInsights.verySlowCalls > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                      {performanceInsights.verySlowCalls.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Primary bottleneck</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-200 capitalize">{performanceInsights.bottleneck === 'io' ? 'I/O' : performanceInsights.bottleneck === 'wait' ? 'Wait (locking)' : 'Processing'}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
+                  {performanceInsights.bottleneckAdvice}
+                </p>
+              </div>
+
+              {performanceInsights.timeBreakdown.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Where Time is Spent</h3>
+                  <p className="text-[10px] text-gray-400 mb-2">Elapsed = Wait + I/O + Processing</p>
+                  <ResponsiveContainer width="100%" height={160}>
+                    <PieChart>
+                      <Pie
+                        data={performanceInsights.timeBreakdown}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        labelLine={{ strokeWidth: 1 }}
+                      >
+                        {performanceInsights.timeBreakdown.map((_, i) => (
+                          <Cell key={i} fill={BREAKDOWN_COLORS[i]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v) => [formatDuration(v)]} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-1">
+                    {performanceInsights.timeBreakdown.map((d, i) => (
+                      <span key={i} className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: BREAKDOWN_COLORS[i] }} />
+                        {d.description}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Slow calls (&gt;250ms)</span>
-                <span className={`font-medium ${performanceInsights.slowCalls > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                  {performanceInsights.slowCalls.toLocaleString()} ({performanceInsights.slowCallPct}%)
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Very slow calls (&gt;1s)</span>
-                <span className={`font-medium ${performanceInsights.verySlowCalls > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                  {performanceInsights.verySlowCalls.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Primary bottleneck</span>
-                <span className="font-medium text-gray-700 dark:text-gray-200 capitalize">{performanceInsights.bottleneck === 'io' ? 'I/O' : performanceInsights.bottleneck === 'wait' ? 'Wait (locking)' : 'Processing'}</span>
-              </div>
+          )}
+
+          {/* Time Series Chart */}
+          {timeSeriesData.length > 1 && (
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Elapsed Time Trends</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={timeSeriesData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="time" tick={{ fontSize: 9 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: 10 }} label={{ value: 'ms', position: 'insideLeft', offset: -5, style: { fontSize: 10 } }} />
+                  <Tooltip formatter={(v) => [`${v.toFixed(1)} ms`]} labelStyle={{ fontSize: 11 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Line type="monotone" dataKey="maxElapsedMs" name="Max Elapsed" stroke="#ef4444" dot={false} strokeWidth={1.5} />
+                  <Line type="monotone" dataKey="avgElapsedMs" name="Avg Elapsed" stroke="#3b82f6" dot={false} strokeWidth={1.5} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-              {performanceInsights.bottleneckAdvice}
-            </p>
+          )}
+
+          {/* Operation Breakdown + Client Hotspots */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {operationStats.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Operation Breakdown</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={operationStats.slice(0, 10)} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="operation" width={130} tick={{ fontSize: 10 }} />
+                    <Tooltip formatter={(v) => [v.toLocaleString()]} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Bar dataKey="count" name="Count" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {clientHotspots.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Client Hotspots (by appearance count)</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={clientHotspots.slice(0, 10)} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="client" width={160} tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(v) => [v.toLocaleString()]} />
+                    <Bar dataKey="count" name="Appearances" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
 
-          {/* Time breakdown pie */}
-          {performanceInsights.timeBreakdown.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Where Time is Spent</h3>
-              <p className="text-[10px] text-gray-400 mb-2">Elapsed = Wait + I/O + Processing</p>
-              <ResponsiveContainer width="100%" height={160}>
-                <PieChart>
-                  <Pie
-                    data={performanceInsights.timeBreakdown}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={60}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={{ strokeWidth: 1 }}
-                  >
-                    {performanceInsights.timeBreakdown.map((_, i) => (
-                      <Cell key={i} fill={BREAKDOWN_COLORS[i]} />
+          {/* Heatmap */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Expensive Calls Heatmap (Total Elapsed by Hour &amp; Day)</h3>
+            <div className="overflow-x-auto">
+              <table className="text-xs">
+                <thead>
+                  <tr>
+                    <th className="px-1 py-1 text-gray-500 dark:text-gray-400" />
+                    {Array.from({ length: 24 }, (_, h) => (
+                      <th key={h} className="px-1 py-1 text-gray-400 font-normal w-6 text-center">{h}</th>
                     ))}
-                  </Pie>
-                  <Tooltip formatter={(v) => [formatDuration(v)]} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex justify-center gap-4 text-[10px] text-gray-500 mt-1">
-                {performanceInsights.timeBreakdown.map((d, i) => (
-                  <span key={i} className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: BREAKDOWN_COLORS[i] }} />
-                    {d.description}
-                  </span>
+                  </tr>
+                </thead>
+                <tbody>
+                  {heatmapData.map((row, day) => (
+                    <tr key={day}>
+                      <td className="px-2 py-0.5 text-gray-500 dark:text-gray-400 font-medium">{dayLabels[day]}</td>
+                      {row.map((val, hour) => {
+                        const intensity = val / heatmapMax;
+                        const r = Math.round(239 + (239 - 239) * intensity);
+                        const g = Math.round(246 + (68 - 246) * intensity);
+                        const b = Math.round(255 + (68 - 255) * intensity);
+                        return (
+                          <td
+                            key={hour}
+                            className="w-6 h-6 text-center"
+                            title={`${dayLabels[day]} ${hour}:00 — ${formatDuration(val)} total`}
+                            style={{
+                              backgroundColor: val > 0 ? `rgb(${r},${g},${b})` : undefined,
+                            }}
+                          >
+                            {val > 0 && <span className="text-[8px] text-white/80">{val > 1000000 ? `${(val / 1000000).toFixed(0)}s` : ''}</span>}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Target Analysis */}
+          {targetStats.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                <Target className="w-4 h-4 inline mr-1" />
+                Top Targets by Total Elapsed Time
+              </h3>
+              <p className="text-xs text-gray-400 mb-3">Table IDs (e.g., table(138)) are internal FileMaker references. Use a DDR (Database Design Report) or tools like FMPerception to map these to actual table/layout names.</p>
+              <div className="space-y-1">
+                {targetStats.slice(0, 15).map((t, i) => (
+                  <div key={i} className="flex items-center gap-3 text-xs py-1 border-b border-gray-100 dark:border-gray-700/50">
+                    <span className="font-mono text-gray-500 w-6">{i + 1}</span>
+                    <span className="font-mono text-gray-700 dark:text-gray-200 flex-1 truncate">{t.target || '(empty)'}</span>
+                    <span className="text-gray-500">{t.count}x</span>
+                    <span className="font-medium text-amber-600 dark:text-amber-400 w-24 text-right">{formatDuration(t.totalElapsed)}</span>
+                  </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Time Series Chart */}
-      {timeSeriesData.length > 1 && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Elapsed Time Trends</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="time" tick={{ fontSize: 9 }} interval="preserveStartEnd" />
-              <YAxis tick={{ fontSize: 10 }} label={{ value: 'ms', position: 'insideLeft', offset: -5, style: { fontSize: 10 } }} />
-              <Tooltip formatter={(v) => [`${v.toFixed(1)} ms`]} labelStyle={{ fontSize: 11 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Line type="monotone" dataKey="maxElapsedMs" name="Max Elapsed" stroke="#ef4444" dot={false} strokeWidth={1.5} />
-              <Line type="monotone" dataKey="avgElapsedMs" name="Avg Elapsed" stroke="#3b82f6" dot={false} strokeWidth={1.5} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Operation Breakdown + Client Hotspots */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {operationStats.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Operation Breakdown</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={operationStats.slice(0, 10)} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="operation" width={130} tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v) => [v.toLocaleString()]} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="count" name="Count" fill="#f59e0b" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-
-        {clientHotspots.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Client Hotspots (by appearance count)</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={clientHotspots.slice(0, 10)} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="client" width={160} tick={{ fontSize: 9 }} />
-                <Tooltip formatter={(v) => [v.toLocaleString()]} />
-                <Bar dataKey="count" name="Appearances" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </div>
-
-      {/* Heatmap */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Expensive Calls Heatmap (Total Elapsed by Hour &amp; Day)</h3>
-        <div className="overflow-x-auto">
-          <table className="text-xs">
-            <thead>
-              <tr>
-                <th className="px-1 py-1 text-gray-500 dark:text-gray-400" />
-                {Array.from({ length: 24 }, (_, h) => (
-                  <th key={h} className="px-1 py-1 text-gray-400 font-normal w-6 text-center">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {heatmapData.map((row, day) => (
-                <tr key={day}>
-                  <td className="px-2 py-0.5 text-gray-500 dark:text-gray-400 font-medium">{dayLabels[day]}</td>
-                  {row.map((val, hour) => {
-                    const intensity = val / heatmapMax;
-                    const r = Math.round(239 + (239 - 239) * intensity);
-                    const g = Math.round(246 + (68 - 246) * intensity);
-                    const b = Math.round(255 + (68 - 255) * intensity);
-                    return (
-                      <td
-                        key={hour}
-                        className="w-6 h-6 text-center"
-                        title={`${dayLabels[day]} ${hour}:00 — ${formatDuration(val)} total`}
-                        style={{
-                          backgroundColor: val > 0 ? `rgb(${r},${g},${b})` : undefined,
-                        }}
-                      >
-                        {val > 0 && <span className="text-[8px] text-white/80">{val > 1000000 ? `${(val / 1000000).toFixed(0)}s` : ''}</span>}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Target Analysis */}
-      {targetStats.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-            <Target className="w-4 h-4 inline mr-1" />
-            Top Targets by Total Elapsed Time
-          </h3>
-          <p className="text-xs text-gray-400 mb-3">Table IDs (e.g., table(138)) are internal FileMaker references. Use a DDR (Database Design Report) or tools like FMPerception to map these to actual table/layout names.</p>
-          <div className="space-y-1">
-            {targetStats.slice(0, 15).map((t, i) => (
-              <div key={i} className="flex items-center gap-3 text-xs py-1 border-b border-gray-100 dark:border-gray-700/50">
-                <span className="font-mono text-gray-500 w-6">{i + 1}</span>
-                <span className="font-mono text-gray-700 dark:text-gray-200 flex-1 truncate">{t.target || '(empty)'}</span>
-                <span className="text-gray-500">{t.count}x</span>
-                <span className="font-medium text-amber-600 dark:text-amber-400 w-24 text-right">{formatDuration(t.totalElapsed)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        </>
       )}
 
       {/* Operation filter */}
@@ -412,6 +415,28 @@ export default function TopCallStatsView({ entries }) {
           ))}
         </select>
       </div>
+
+      {/* Active filter/sort indicator */}
+      {(filterOperation !== 'all' || sortOverride) && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+          <span className="text-blue-600 dark:text-blue-400 font-medium">
+            {filterOperation !== 'all' ? `Showing: ${filterOperation}` : ''}
+            {filterOperation !== 'all' && sortOverride ? ' | ' : ''}
+            {sortOverride ? `Sorted by: ${sortOverride === 'elapsedTime' ? 'Elapsed Time' : sortOverride === 'waitTime' ? 'Wait Time' : 'I/O Time'}` : ''}
+          </span>
+          {filterOperation !== 'all' && (
+            <span className="text-blue-400 dark:text-blue-500">
+              ({filtered.length.toLocaleString()} of {entries.length.toLocaleString()})
+            </span>
+          )}
+          <button
+            onClick={() => { setFilterOperation('all'); setSortOverride(null); }}
+            className="ml-auto text-xs text-blue-500 hover:text-blue-600 font-medium"
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Main table */}
       <DataTable

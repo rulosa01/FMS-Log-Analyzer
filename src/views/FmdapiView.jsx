@@ -9,8 +9,8 @@ const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#0
 
 export default function FmdapiView({ entries }) {
   const [filterLevel, setFilterLevel] = useState('all');
-  const [detailPanel, setDetailPanel] = useState(null); // 'ips' | 'accounts' | null
-  const [filterValue, setFilterValue] = useState(null); // filter table by specific IP or account
+  const [detailPanel, setDetailPanel] = useState(null); // 'ips' | 'accounts' | 'databases' | null
+  const [filterValue, setFilterValue] = useState(null); // filter table by specific IP, account, or database
 
   const stats = useMemo(() => ({
     total: entries.length,
@@ -51,6 +51,23 @@ export default function FmdapiView({ entries }) {
     });
     return Object.values(map)
       .map(d => ({ ...d, ips: Array.from(d.ips), databases: Array.from(d.databases), methods: Array.from(d.methods) }))
+      .sort((a, b) => b.requests - a.requests);
+  }, [entries]);
+
+  // Database breakdown
+  const dbSummary = useMemo(() => {
+    const map = {};
+    entries.forEach(e => {
+      const db = e.database || 'Unknown';
+      if (!map[db]) map[db] = { database: db, requests: 0, errors: 0, accounts: new Set(), ips: new Set(), methods: new Set() };
+      map[db].requests++;
+      if (e.level === 'ERROR') map[db].errors++;
+      if (e.account) map[db].accounts.add(e.account);
+      if (e.ip) map[db].ips.add(e.ip);
+      if (e.method) map[db].methods.add(e.method);
+    });
+    return Object.values(map)
+      .map(d => ({ ...d, accounts: Array.from(d.accounts), ips: Array.from(d.ips), methods: Array.from(d.methods) }))
       .sort((a, b) => b.requests - a.requests);
   }, [entries]);
 
@@ -98,7 +115,8 @@ export default function FmdapiView({ entries }) {
           onClick={() => { setDetailPanel(detailPanel === 'ips' ? null : 'ips'); setFilterValue(null); }} active={detailPanel === 'ips'} />
         <StatCard label="Accounts" value={stats.uniqueAccounts} color="emerald" icon={Users}
           onClick={() => { setDetailPanel(detailPanel === 'accounts' ? null : 'accounts'); setFilterValue(null); }} active={detailPanel === 'accounts'} />
-        <StatCard label="Databases" value={stats.uniqueDBs} color="cyan" icon={Database} />
+        <StatCard label="Databases" value={stats.uniqueDBs} color="cyan" icon={Database}
+          onClick={() => { setDetailPanel(detailPanel === 'databases' ? null : 'databases'); setFilterValue(null); }} active={detailPanel === 'databases'} />
       </div>
 
       {/* IP Detail Panel */}
@@ -201,6 +219,58 @@ export default function FmdapiView({ entries }) {
         </div>
       )}
 
+      {/* Database Detail Panel */}
+      {detailPanel === 'databases' && (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Database Breakdown</h3>
+            <button onClick={() => { setDetailPanel(null); setFilterValue(null); }} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          {filterValue && (
+            <div className="mb-3 flex items-center gap-2 text-xs">
+              <span className="text-gray-500">Filtering table by database:</span>
+              <span className="px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 font-medium">{filterValue}</span>
+              <button onClick={() => setFilterValue(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-[10px] underline">clear</button>
+            </div>
+          )}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                  <th className="pb-1.5 pr-4">Database</th>
+                  <th className="pb-1.5 pr-4">Requests</th>
+                  <th className="pb-1.5 pr-4">Errors</th>
+                  <th className="pb-1.5 pr-4">Accounts</th>
+                  <th className="pb-1.5 pr-4">IPs</th>
+                  <th className="pb-1.5">Methods</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dbSummary.map(d => (
+                  <tr
+                    key={d.database}
+                    onClick={() => setFilterValue(filterValue === d.database ? null : d.database)}
+                    className={`border-b border-gray-100 dark:border-gray-700/50 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${filterValue === d.database ? 'bg-cyan-50 dark:bg-cyan-900/20' : ''}`}
+                  >
+                    <td className="py-1.5 pr-4 font-medium text-gray-700 dark:text-gray-200">{d.database}</td>
+                    <td className="py-1.5 pr-4">{d.requests.toLocaleString()}</td>
+                    <td className="py-1.5 pr-4 text-red-600 dark:text-red-400">{d.errors || '-'}</td>
+                    <td className="py-1.5 pr-4 text-emerald-600 dark:text-emerald-400">{d.accounts.join(', ') || '-'}</td>
+                    <td className="py-1.5 pr-4 font-mono text-gray-500">{d.ips.join(', ') || '-'}</td>
+                    <td className="py-1.5 text-gray-500">{d.methods.join(', ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[10px] text-gray-400 mt-2">Click a row to filter the main table by that database.</p>
+        </div>
+      )}
+
+      {/* Charts — hidden when a filter or detail panel is active */}
+      {filterLevel === 'all' && !detailPanel && (
       <div className="grid md:grid-cols-2 gap-4">
         {methodBreakdown.length > 0 && (
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
@@ -231,6 +301,7 @@ export default function FmdapiView({ entries }) {
           </div>
         )}
       </div>
+      )}
 
       <DataTable
         data={(() => {
@@ -238,6 +309,7 @@ export default function FmdapiView({ entries }) {
           if (filterLevel !== 'all') data = data.filter(e => e.level === filterLevel);
           if (filterValue && detailPanel === 'ips') data = data.filter(e => e.ip === filterValue);
           if (filterValue && detailPanel === 'accounts') data = data.filter(e => e.account === filterValue);
+          if (filterValue && detailPanel === 'databases') data = data.filter(e => e.database === filterValue);
           return data;
         })()}
         columns={columns}
