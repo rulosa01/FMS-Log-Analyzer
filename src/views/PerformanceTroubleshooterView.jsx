@@ -26,6 +26,7 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectStart, setSelectStart] = useState(null);
   const [selectEnd, setSelectEnd] = useState(null);
+  const [minPeakFilter, setMinPeakFilter] = useState(25);
 
   // Reset drill-down if data changes out from under us
   useEffect(() => {
@@ -69,16 +70,16 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
 
   const statsOverview = useMemo(() => {
     if (statsChartData.length === 0) return null;
-    let totalElapsed = 0, maxElapsed = 0, totalCache = 0, maxCalls = 0;
-    statsChartData.forEach(d => {
+    let totalElapsed = 0, maxElapsed = 0, maxElapsedIdx = 0, totalCache = 0, maxCalls = 0;
+    statsChartData.forEach((d, i) => {
       totalElapsed += d.elapsedMs;
-      if (d.elapsedMs > maxElapsed) maxElapsed = d.elapsedMs;
+      if (d.elapsedMs > maxElapsed) { maxElapsed = d.elapsedMs; maxElapsedIdx = i; }
       totalCache += d.cacheHitPct;
       if (d.callsSec > maxCalls) maxCalls = d.callsSec;
     });
     return {
       avgElapsed: totalElapsed / statsChartData.length,
-      maxElapsed,
+      maxElapsed, maxElapsedIdx,
       avgCache: totalCache / statsChartData.length,
       maxCalls,
     };
@@ -121,6 +122,16 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
     });
   }, [statsChartData]);
 
+  const maxPeak = useMemo(() => {
+    if (hotSpots.length === 0) return 100;
+    return Math.ceil(Math.max(...hotSpots.map(s => s.peakMs)));
+  }, [hotSpots]);
+
+  const filteredHotSpots = useMemo(() => {
+    if (minPeakFilter <= 0) return hotSpots;
+    return hotSpots.filter(s => s.peakMs >= minPeakFilter);
+  }, [hotSpots, minPeakFilter]);
+
   const handleChartMouseDown = useCallback((e) => {
     if (e && e.activeTooltipIndex != null) {
       setSelectStart(e.activeTooltipIndex);
@@ -155,6 +166,26 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
     setSelectedTimeRange({ start: spot.start, end: spot.end, label: spot.label });
     setStep(2);
   }, []);
+
+  const handleMaxElapsedClick = useCallback(() => {
+    if (!statsOverview || statsChartData.length === 0) return;
+    const idx = statsOverview.maxElapsedIdx;
+    // Find the hotspot containing the max elapsed data point
+    const spot = hotSpots.find(s => idx >= s.startIdx && idx <= s.endIdx);
+    if (spot) {
+      selectHotSpot(spot);
+    } else {
+      // Max point isn't in a detected hotspot — create a window around it
+      const pad = 3;
+      const si = Math.max(0, idx - pad);
+      const ei = Math.min(statsChartData.length - 1, idx + pad);
+      selectHotSpot({
+        start: statsChartData[si].timestamp,
+        end: statsChartData[ei].timestamp,
+        label: `${statsChartData[si].time} — ${statsChartData[ei].time}`,
+      });
+    }
+  }, [statsOverview, hotSpots, statsChartData, selectHotSpot]);
 
   // ===================== STEP 2: WHO =====================
 
@@ -384,7 +415,7 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
           {statsOverview && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard label="Avg Elapsed/Call" value={`${statsOverview.avgElapsed.toFixed(1)} ms`} color="blue" icon={Clock} />
-              <StatCard label="Max Elapsed/Call" value={`${statsOverview.maxElapsed.toFixed(1)} ms`} color="red" icon={AlertTriangle} />
+              <StatCard label="Max Elapsed/Call" value={`${statsOverview.maxElapsed.toFixed(1)} ms`} color="red" icon={AlertTriangle} onClick={handleMaxElapsedClick} />
               <StatCard label="Avg Cache Hit" value={`${statsOverview.avgCache.toFixed(1)}%`} color="emerald" icon={HardDrive} />
               <StatCard label="Max Calls/sec" value={statsOverview.maxCalls.toFixed(1)} color="violet" icon={Activity} />
             </div>
@@ -392,22 +423,43 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
 
           {/* Hot spots */}
           {hotSpots.length > 0 ? (
-            <div className="flex items-start gap-2 flex-wrap px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-                <span className="text-xs font-medium text-red-700 dark:text-red-300">Performance spikes detected:</span>
+            <div className="px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span className="text-xs font-medium text-red-700 dark:text-red-300 shrink-0">
+                  {filteredHotSpots.length === hotSpots.length
+                    ? `${hotSpots.length} spike${hotSpots.length === 1 ? '' : 's'} detected`
+                    : `${filteredHotSpots.length} of ${hotSpots.length} spikes`
+                  }
+                </span>
+                <span className="text-[10px] text-red-400 dark:text-red-500 shrink-0">|</span>
+                <label className="text-[10px] text-red-600 dark:text-red-400 shrink-0">Min peak:</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={maxPeak}
+                  step={1}
+                  value={minPeakFilter}
+                  onChange={(e) => setMinPeakFilter(Number(e.target.value))}
+                  className="w-24 h-1.5 accent-red-500 cursor-pointer"
+                />
+                <span className="text-[11px] font-mono text-red-700 dark:text-red-300 shrink-0">{minPeakFilter} ms</span>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {hotSpots.map((spot, i) => (
-                  <button
-                    key={i}
-                    onClick={() => selectHotSpot(spot)}
-                    className="text-[11px] px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/60 transition-colors font-medium"
-                  >
-                    {spot.label} (peak: {spot.peakMs.toFixed(0)} ms)
-                  </button>
-                ))}
-              </div>
+              {filteredHotSpots.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {filteredHotSpots.map((spot, i) => (
+                    <button
+                      key={i}
+                      onClick={() => selectHotSpot(spot)}
+                      className="text-[11px] px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/60 transition-colors font-medium"
+                    >
+                      {spot.label} (peak: {spot.peakMs.toFixed(0)} ms)
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-red-500 dark:text-red-400">No spikes at or above {minPeakFilter} ms. Drag the slider left to lower the threshold.</p>
+              )}
             </div>
           ) : statsChartData.length >= 10 && (
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-xs">
@@ -438,7 +490,7 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
                   <Line type="monotone" dataKey="waitMs" name="Wait" stroke="#f59e0b" dot={false} strokeWidth={1} />
                   <Line type="monotone" dataKey="ioMs" name="I/O" stroke="#06b6d4" dot={false} strokeWidth={1} />
 
-                  {hotSpots.map((spot, i) => (
+                  {filteredHotSpots.map((spot, i) => (
                     <ReferenceArea
                       key={`hot-${i}`}
                       x1={statsChartData[spot.startIdx].time}
