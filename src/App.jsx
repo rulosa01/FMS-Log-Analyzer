@@ -17,6 +17,7 @@ import StatsView from './views/StatsView.jsx';
 import ScriptEventView from './views/ScriptEventView.jsx';
 import FmdapiView from './views/FmdapiView.jsx';
 import PerformanceTroubleshooterView from './views/PerformanceTroubleshooterView.jsx';
+import OverviewView from './views/OverviewView.jsx';
 
 const VIEW_ICONS = {
   event: Activity,
@@ -75,9 +76,8 @@ function App() {
       setDateStart(toLocal(start));
     }
 
-    // Auto-select first view
-    const types = Object.keys(merged);
-    if (types.length > 0) setActiveView(types[0]);
+    // Show overview screen after parsing
+    setActiveView('overview');
   }, []);
 
   // Apply date range filter
@@ -233,6 +233,9 @@ function App() {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-4">
+          {activeView === 'overview' && filteredData && (
+            <OverviewView logData={filteredData} onSelectView={setActiveView} />
+          )}
           {activeView === 'troubleshooter' && filteredData && (
             <div>
               <div className="mb-4">
