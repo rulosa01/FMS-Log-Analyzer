@@ -16,6 +16,7 @@ import ClientStatsView from './views/ClientStatsView.jsx';
 import StatsView from './views/StatsView.jsx';
 import ScriptEventView from './views/ScriptEventView.jsx';
 import FmdapiView from './views/FmdapiView.jsx';
+import PerformanceTroubleshooterView from './views/PerformanceTroubleshooterView.jsx';
 
 const VIEW_ICONS = {
   event: Activity,
@@ -198,6 +199,29 @@ function App() {
             })}
           </div>
 
+          {/* Troubleshooter tool */}
+          {logData['stats'] && logData['clientstats'] && logData['topcallstats'] && (
+            <div className="p-3 pt-0 space-y-1">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 px-2 mt-3 mb-2">Tools</p>
+              <button
+                onClick={() => setActiveView('troubleshooter')}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
+                  activeView === 'troubleshooter'
+                    ? 'bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-lg'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Link2 className="w-4 h-4 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium truncate">Troubleshooter</p>
+                  <p className={`text-[10px] ${activeView === 'troubleshooter' ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
+                    Guided drill-down
+                  </p>
+                </div>
+              </button>
+            </div>
+          )}
+
           {/* File info */}
           <div className="p-3 border-t border-gray-200 dark:border-gray-700">
             <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 px-2 mb-2">Files</p>
@@ -209,7 +233,24 @@ function App() {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-4">
-          {activeView && activeData && (
+          {activeView === 'troubleshooter' && filteredData && (
+            <div>
+              <div className="mb-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                    {LOG_TYPE_LABELS[activeView]}
+                  </h2>
+                  {(dateStart || dateEnd) && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                      Filtered
+                    </span>
+                  )}
+                </div>
+              </div>
+              <PerformanceTroubleshooterView filteredData={filteredData} />
+            </div>
+          )}
+          {activeView && activeView !== 'troubleshooter' && activeData && (
             <div>
               <div className="mb-4">
                 <div className="flex items-center gap-2">

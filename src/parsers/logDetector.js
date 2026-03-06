@@ -54,6 +54,7 @@ export const LOG_TYPE_LABELS = {
   wpe: 'Web Publishing',
   fmdapi: 'Data API',
   fmodata: 'OData API',
+  troubleshooter: 'Performance Troubleshooter',
   unknown: 'Unknown',
 };
 
