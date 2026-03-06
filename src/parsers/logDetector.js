@@ -10,6 +10,9 @@ const FILENAME_PATTERNS = [
   { pattern: /^wpe_access(-old)?\.log$/i, type: 'wpe' },
   { pattern: /^fmdapi(-old)?\.log$/i, type: 'fmdapi' },
   { pattern: /^fmodata(-old)?\.log$/i, type: 'fmodata' },
+  { pattern: /^fac(-old)?\.log$/i, type: 'fac' },
+  { pattern: /^fmscwpc(-old)?\.log$/i, type: 'fmscwpc' },
+  { pattern: /^LoadSchedules(-old)?\.log$/i, type: 'loadschedules' },
 ];
 
 const HEADER_PATTERNS = {
@@ -54,6 +57,9 @@ export const LOG_TYPE_LABELS = {
   wpe: 'Web Publishing',
   fmdapi: 'Data API',
   fmodata: 'OData API',
+  fac: 'Admin Console',
+  fmscwpc: 'Cloud Web Publishing',
+  loadschedules: 'Schedule Loader',
   troubleshooter: 'Performance Troubleshooter',
   unknown: 'Unknown',
 };
@@ -68,5 +74,8 @@ export const LOG_TYPE_COLORS = {
   wpe: { bg: 'bg-pink-500', light: 'bg-pink-50 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', border: 'border-pink-200 dark:border-pink-800' },
   fmdapi: { bg: 'bg-indigo-500', light: 'bg-indigo-50 dark:bg-indigo-900/30', text: 'text-indigo-600 dark:text-indigo-400', border: 'border-indigo-200 dark:border-indigo-800' },
   fmodata: { bg: 'bg-teal-500', light: 'bg-teal-50 dark:bg-teal-900/30', text: 'text-teal-600 dark:text-teal-400', border: 'border-teal-200 dark:border-teal-800' },
+  fac: { bg: 'bg-orange-500', light: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-800' },
+  fmscwpc: { bg: 'bg-rose-500', light: 'bg-rose-50 dark:bg-rose-900/30', text: 'text-rose-600 dark:text-rose-400', border: 'border-rose-200 dark:border-rose-800' },
+  loadschedules: { bg: 'bg-lime-500', light: 'bg-lime-50 dark:bg-lime-900/30', text: 'text-lime-600 dark:text-lime-400', border: 'border-lime-200 dark:border-lime-800' },
   unknown: { bg: 'bg-gray-500', light: 'bg-gray-50 dark:bg-gray-900/30', text: 'text-gray-600 dark:text-gray-400', border: 'border-gray-200 dark:border-gray-800' },
 };

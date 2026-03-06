@@ -200,7 +200,12 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" /> TopCallStats.log &mdash; Expensive remote call analysis</div>
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> ClientStats.log &mdash; Per-client resource usage</div>
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" /> Stats.log &mdash; Aggregate server statistics</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" /> Script event, Data API, and more</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" /> scriptEvent.log &mdash; Script errors &amp; FM error codes</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" /> fmdapi.log &mdash; Data API requests &amp; errors</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" /> fac.log &mdash; Admin Console activity &amp; system alerts</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" /> fmscwpc.log &mdash; Cloud web publishing diagnostics</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-lime-500 shrink-0" /> LoadSchedules.log &mdash; Schedule import results</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-pink-500 shrink-0" /> wpe.log, fmodata.log &mdash; Web publishing &amp; OData</div>
             </div>
 
             <div className={`mt-4 p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
@@ -333,6 +338,10 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
             <a href="https://www.portagebay.com/blog/top-calls-log-analysis/" target="_blank" rel="noopener noreferrer"
               className={`px-2.5 py-1 rounded-lg transition-colors ${darkMode ? 'bg-blue-900/30 text-blue-400 hover:bg-blue-900/50' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
               Portage Bay: Top Calls Log Analysis
+            </a>
+            <a href="https://www.youtube.com/watch?v=0zojDzSgbC8" target="_blank" rel="noopener noreferrer"
+              className={`px-2.5 py-1 rounded-lg transition-colors ${darkMode ? 'bg-blue-900/30 text-blue-400 hover:bg-blue-900/50' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
+              Video: FMS Log Analysis Guide
             </a>
           </div>
         </div>

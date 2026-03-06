@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import {
   BookOpen, Activity, Users, Zap, BarChart3, Server,
-  FileCode, Globe, FileText, Link2, ArrowRight,
+  FileCode, Globe, FileText, Link2, ArrowRight, Shield, Cloud, Calendar,
 } from 'lucide-react';
 import { LOG_TYPE_LABELS, LOG_TYPE_COLORS } from '../parsers/logDetector.js';
 const formatShortDate = (d) => {
@@ -19,6 +19,9 @@ const VIEW_ICONS = {
   fmdapi: Globe,
   fmodata: Globe,
   wpe: Globe,
+  fac: Shield,
+  fmscwpc: Cloud,
+  loadschedules: Calendar,
 };
 
 const LOG_DESCRIPTIONS = {
@@ -31,6 +34,9 @@ const LOG_DESCRIPTIONS = {
   fmdapi: 'Data API requests — methods, endpoints, accounts, IPs, and errors',
   fmodata: 'OData API request logging',
   wpe: 'Web Publishing Engine request logging',
+  fac: 'Admin Console activity, API errors, CPU/memory alerts, and system notifications',
+  fmscwpc: 'Cloud web publishing engine crash diagnostics and stack traces',
+  loadschedules: 'Schedule import results — loaded schedules and missing file warnings',
 };
 
 export default function OverviewView({ logData, onSelectView }) {

@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import {
   FileText, Sun, Moon, Upload,
   Activity, Users, Zap, BarChart3, Server,
-  FileCode, Globe, Link2,
+  FileCode, Globe, Link2, Shield, Cloud, Calendar,
 } from 'lucide-react';
 import { useDarkMode } from './utils/hooks.js';
 import { LOG_TYPE_LABELS } from './parsers/logDetector.js';
@@ -18,6 +18,9 @@ import ScriptEventView from './views/ScriptEventView.jsx';
 import FmdapiView from './views/FmdapiView.jsx';
 import PerformanceTroubleshooterView from './views/PerformanceTroubleshooterView.jsx';
 import OverviewView from './views/OverviewView.jsx';
+import FacView from './views/FacView.jsx';
+import FmscwpcView from './views/FmscwpcView.jsx';
+import LoadSchedulesView from './views/LoadSchedulesView.jsx';
 
 const VIEW_ICONS = {
   event: Activity,
@@ -29,6 +32,9 @@ const VIEW_ICONS = {
   fmdapi: Globe,
   fmodata: Globe,
   wpe: Globe,
+  fac: Shield,
+  fmscwpc: Cloud,
+  loadschedules: Calendar,
   correlation: Link2,
 };
 
@@ -292,6 +298,9 @@ function renderView(type, entries) {
     case 'stats': return <StatsView entries={entries} />;
     case 'scriptevent': return <ScriptEventView entries={entries} />;
     case 'fmdapi': return <FmdapiView entries={entries} />;
+    case 'fac': return <FacView entries={entries} />;
+    case 'fmscwpc': return <FmscwpcView entries={entries} />;
+    case 'loadschedules': return <LoadSchedulesView entries={entries} />;
     default:
       return (
         <div className="text-center py-12 text-gray-400">

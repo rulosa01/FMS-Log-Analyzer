@@ -6,6 +6,9 @@ import { parseClientStatsLog } from './clientStatsParser.js';
 import { parseStatsLog } from './statsParser.js';
 import { parseScriptEventLog } from './scriptEventParser.js';
 import { parseFmdapiLog } from './fmdapiParser.js';
+import { parseFacLog } from './facParser.js';
+import { parseFmscwpcLog } from './fmscwpcParser.js';
+import { parseLoadSchedulesLog } from './loadSchedulesParser.js';
 
 const PARSERS = {
   event: parseEventLog,
@@ -15,6 +18,9 @@ const PARSERS = {
   stats: parseStatsLog,
   scriptevent: parseScriptEventLog,
   fmdapi: parseFmdapiLog,
+  fac: parseFacLog,
+  fmscwpc: parseFmscwpcLog,
+  loadschedules: parseLoadSchedulesLog,
 };
 
 export async function parseLogFile(file, onProgress) {
