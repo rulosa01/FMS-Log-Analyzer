@@ -27,6 +27,9 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
   const [selectStart, setSelectStart] = useState(null);
   const [selectEnd, setSelectEnd] = useState(null);
   const [minPeakFilter, setMinPeakFilter] = useState(25);
+  const [spikeSort, setSpikeSort] = useState('peak');
+  const [spikePage, setSpikePage] = useState(0);
+  const [spikePageSize, setSpikePageSize] = useState(25);
 
   // Reset drill-down if data changes out from under us
   useEffect(() => {
@@ -112,11 +115,29 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
     return spots.map(s => {
       const si = Math.max(0, s.startIdx - 2);
       const ei = Math.min(statsChartData.length - 1, s.endIdx + 2);
+      const spikeData = statsChartData.slice(s.startIdx, s.endIdx + 1);
+      let totalWait = 0, totalIO = 0, totalElapsed = 0, maxCalls = 0;
+      spikeData.forEach(d => {
+        totalElapsed += d.elapsedMs;
+        totalWait += d.waitMs;
+        totalIO += d.ioMs;
+        if (d.callsInProgress > maxCalls) maxCalls = d.callsInProgress;
+      });
+      const avgElapsed = spikeData.length > 0 ? totalElapsed / spikeData.length : 0;
+      const totalProcessing = Math.max(0, totalElapsed - totalWait - totalIO);
+      let bottleneck = 'processing';
+      if (totalWait > totalIO && totalWait > totalProcessing) bottleneck = 'wait';
+      else if (totalIO > totalWait && totalIO > totalProcessing) bottleneck = 'io';
+      const intervals = s.endIdx - s.startIdx + 1;
       return {
         startIdx: si, endIdx: ei,
         start: statsChartData[si].timestamp,
         end: statsChartData[ei].timestamp,
         peakMs: s.peakMs,
+        avgMs: avgElapsed,
+        bottleneck,
+        maxCalls,
+        intervals,
         label: `${statsChartData[si].time} — ${statsChartData[ei].time}`,
       };
     });
@@ -128,9 +149,15 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
   }, [hotSpots]);
 
   const filteredHotSpots = useMemo(() => {
-    if (minPeakFilter <= 0) return hotSpots;
-    return hotSpots.filter(s => s.peakMs >= minPeakFilter);
-  }, [hotSpots, minPeakFilter]);
+    setSpikePage(0);
+    const filtered = minPeakFilter <= 0 ? hotSpots : hotSpots.filter(s => s.peakMs >= minPeakFilter);
+    return [...filtered].sort((a, b) =>
+      spikeSort === 'peak' ? b.peakMs - a.peakMs : a.startIdx - b.startIdx
+    );
+  }, [hotSpots, minPeakFilter, spikeSort]);
+
+  const spikePageCount = Math.max(1, Math.ceil(filteredHotSpots.length / spikePageSize));
+  const pagedHotSpots = filteredHotSpots.slice(spikePage * spikePageSize, (spikePage + 1) * spikePageSize);
 
   const handleChartMouseDown = useCallback((e) => {
     if (e && e.activeTooltipIndex != null) {
@@ -444,18 +471,79 @@ export default function PerformanceTroubleshooterView({ filteredData }) {
                   className="w-24 h-1.5 accent-red-500 cursor-pointer"
                 />
                 <span className="text-[11px] font-mono text-red-700 dark:text-red-300 shrink-0">{minPeakFilter} ms</span>
+                <span className="text-[10px] text-red-400 dark:text-red-500 shrink-0">|</span>
+                <select
+                  value={spikeSort}
+                  onChange={(e) => setSpikeSort(e.target.value)}
+                  className="text-[11px] px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-300 border-none cursor-pointer focus:outline-none"
+                >
+                  <option value="peak">Longest peak first</option>
+                  <option value="time">Chronological</option>
+                </select>
               </div>
               {filteredHotSpots.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {filteredHotSpots.map((spot, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectHotSpot(spot)}
-                      className="text-[11px] px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/60 transition-colors font-medium"
-                    >
-                      {spot.label} (peak: {spot.peakMs.toFixed(0)} ms)
-                    </button>
-                  ))}
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-3 px-2.5 py-1 text-[10px] font-medium text-red-400 dark:text-red-500 uppercase tracking-wide">
+                    <span className="w-5 text-right shrink-0">#</span>
+                    <span className="min-w-0 flex-1">Time Range</span>
+                    <span className="flex items-center gap-2 shrink-0 ml-auto">
+                      <span>Intervals</span>
+                      <span>Bottleneck</span>
+                      <span>Calls</span>
+                      <span className="w-16 text-right">Peak</span>
+                    </span>
+                  </div>
+                  {pagedHotSpots.map((spot, i) => {
+                    const rank = spikePage * spikePageSize + i + 1;
+                    const bottleneckLabel = { wait: 'Wait', io: 'I/O', processing: 'Processing' }[spot.bottleneck];
+                    const bottleneckColor = { wait: 'text-amber-600 dark:text-amber-400', io: 'text-cyan-600 dark:text-cyan-400', processing: 'text-violet-600 dark:text-violet-400' }[spot.bottleneck];
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => selectHotSpot(spot)}
+                        className="w-full flex items-center gap-3 px-2.5 py-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-800/40 transition-colors text-left"
+                      >
+                        <span className="text-[10px] font-bold text-red-400 dark:text-red-500 w-5 text-right shrink-0">#{rank}</span>
+                        <span className="text-[11px] text-red-700 dark:text-red-300 min-w-0 truncate">{spot.label}</span>
+                        <span className="flex items-center gap-2 shrink-0 ml-auto">
+                          {spot.intervals > 1 && <span className="text-[10px] text-gray-400 dark:text-gray-500">{spot.intervals} intervals</span>}
+                          <span className={`text-[10px] ${bottleneckColor}`}>{bottleneckLabel}</span>
+                          {spot.maxCalls > 0 && <span className="text-[10px] text-gray-400 dark:text-gray-500">{spot.maxCalls} calls</span>}
+                          <span className="text-[11px] font-mono font-semibold text-red-600 dark:text-red-400 w-16 text-right">{spot.peakMs.toFixed(0)} ms</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                  {/* Pagination */}
+                  {filteredHotSpots.length > spikePageSize && (
+                    <div className="flex items-center justify-between pt-1.5 px-2.5">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setSpikePage(p => Math.max(0, p - 1))}
+                          disabled={spikePage === 0}
+                          className="text-[11px] px-2 py-0.5 rounded text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        >Prev</button>
+                        <span className="text-[10px] text-red-500 dark:text-red-400 px-1">
+                          {spikePage + 1} / {spikePageCount}
+                        </span>
+                        <button
+                          onClick={() => setSpikePage(p => Math.min(spikePageCount - 1, p + 1))}
+                          disabled={spikePage >= spikePageCount - 1}
+                          className="text-[11px] px-2 py-0.5 rounded text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        >Next</button>
+                      </div>
+                      <select
+                        value={spikePageSize}
+                        onChange={(e) => { setSpikePageSize(Number(e.target.value)); setSpikePage(0); }}
+                        className="text-[11px] px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-300 border-none cursor-pointer focus:outline-none"
+                      >
+                        <option value={10}>10 per page</option>
+                        <option value={25}>25 per page</option>
+                        <option value={50}>50 per page</option>
+                        <option value={100}>100 per page</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-[11px] text-red-500 dark:text-red-400">No spikes at or above {minPeakFilter} ms. Drag the slider left to lower the threshold.</p>
