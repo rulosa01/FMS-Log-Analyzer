@@ -71,7 +71,7 @@ export default function EventLogView({ entries }) {
         break;
       case 'databases':
         setFilterSeverity('all');
-        setFilterCategory(filterCategory === 'db_opened' ? 'all' : 'db_opened');
+        setFilterCategory(filterCategory === 'db_all' ? 'all' : 'db_all');
         break;
       case 'schedules':
         setFilterSeverity('all');
@@ -85,7 +85,9 @@ export default function EventLogView({ entries }) {
     if (filterSeverity !== 'all') {
       result = result.filter(e => e.severity === filterSeverity);
     }
-    if (filterCategory !== 'all') {
+    if (filterCategory === 'db_all') {
+      result = result.filter(e => e.category === 'db_opened' || e.category === 'db_closed' || e.category === 'db_opening' || e.category === 'db_closing');
+    } else if (filterCategory !== 'all') {
       result = result.filter(e => e.category === filterCategory);
     }
     return result;
@@ -246,7 +248,7 @@ export default function EventLogView({ entries }) {
         <StatCard label="Restarts" value={stats.restarts} color="violet" icon={Clock}
           onClick={() => handleStatClick('restarts')} active={filterCategory === 'server_stopping'} />
         <StatCard label="Databases" value={stats.databases} color="cyan" icon={Database}
-          onClick={() => handleStatClick('databases')} active={filterCategory === 'db_opened'} />
+          onClick={() => handleStatClick('databases')} active={filterCategory === 'db_all'} />
         <StatCard label="Schedules" value={stats.schedules} color="emerald" icon={PlayCircle}
           onClick={() => handleStatClick('schedules')} active={filterCategory === 'schedule_start'} />
       </div>
