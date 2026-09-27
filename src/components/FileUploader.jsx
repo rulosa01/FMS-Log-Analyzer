@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Upload, FileText, X, Sparkles, Shield, AlertCircle, Heart, ExternalLink, AlertTriangle, Moon, Sun } from 'lucide-react';
+import { Upload, FileText, X, Sparkles, Shield, AlertCircle, Heart, AlertTriangle, Moon, Sun } from 'lucide-react';
 import { parseLogFile, LOG_TYPE_LABELS } from '../parsers/index.js';
 import { detectLogType } from '../parsers/logDetector.js';
 
@@ -189,10 +189,9 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               About This Tool
             </h2>
             <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              FMS Detective Lite is the <strong>free, open-source edition of FMS Detective</strong>,
-              built for the FileMaker community. Upload your server logs and get interactive
-              dashboards, charts, performance insights, and detailed breakdowns &mdash; all
-              processed locally in your browser.
+              FMS Detective Lite is the <strong>free edition of FMS Detective</strong>.
+              Upload your server logs and get interactive dashboards, charts, performance
+              insights, and detailed breakdowns &mdash; all processed locally in your browser.
             </p>
 
             <div className={`mt-4 space-y-1.5 text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -210,20 +209,6 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-pink-500 shrink-0" /> wpe.log, fmodata.log &mdash; Web publishing &amp; OData</div>
             </div>
 
-            <div className={`mt-4 p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-              <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                <strong>Prefer to run it locally?</strong> Download the source code and run it yourself:
-              </p>
-              <a
-                href="https://github.com/rulosa01/FMS-Log-Analyzer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-2 text-sm text-blue-500 hover:text-blue-600 font-medium"
-              >
-                <ExternalLink size={14} />
-                github.com/rulosa01/FMS-Log-Analyzer
-              </a>
-            </div>
           </div>
         </div>
 
@@ -377,7 +362,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
 
         {/* Footer */}
         <div className={`text-center text-sm pt-4 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-          Made with {'\u2764\uFE0F'} for the FileMaker community
+          FMS Detective Lite &mdash; from the maker of <a href="https://fmsdetective.com/" className="text-blue-500 hover:text-blue-600">FMS Detective</a>
         </div>
       </div>
     </div>
