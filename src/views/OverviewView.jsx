@@ -3,7 +3,7 @@ import {
   AlertTriangle, Users, BarChart3, Contact, Clock, FileText, Globe,
   Monitor, Cog, Cloud, Calendar, Stethoscope, Sparkles, ArrowRight,
 } from 'lucide-react';
-import { LOG_TYPE_LABELS, LOG_TYPE_COLORS } from '../parsers/logDetector.js';
+import { LOG_TYPE_LABELS, LOG_TYPE_COLORS, sortLogTypes } from '../parsers/logDetector.js';
 const formatShortDate = (d) => {
   if (!d || !(d instanceof Date) || isNaN(d)) return '';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -43,7 +43,7 @@ const LOG_DESCRIPTIONS = {
 export default function OverviewView({ logData, onSelectView }) {
   const logTypes = useMemo(() => {
     if (!logData) return [];
-    return Object.entries(logData).map(([type, data]) => {
+    return sortLogTypes(Object.entries(logData)).map(([type, data]) => {
       const entries = data.entries;
       let minTs = null, maxTs = null;
       for (const e of entries) {

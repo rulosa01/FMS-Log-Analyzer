@@ -5,7 +5,7 @@ import {
   Globe, Monitor, Cog, Cloud, Calendar, Stethoscope,
 } from 'lucide-react';
 import { useDarkMode } from './utils/hooks.js';
-import { LOG_TYPE_LABELS } from './parsers/logDetector.js';
+import { LOG_TYPE_LABELS, sortLogTypes } from './parsers/logDetector.js';
 import { isInDateRange } from './utils/dateUtils.js';
 import FileUploader from './components/FileUploader.jsx';
 import DateRangeFilter from './components/DateRangeFilter.jsx';
@@ -185,7 +185,7 @@ function App() {
         <nav className="w-52 shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
           <div className="p-3 space-y-1">
             <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 px-2 mb-2">Loaded Logs</p>
-            {Object.entries(logData).map(([type, data]) => {
+            {sortLogTypes(Object.entries(logData)).map(([type, data]) => {
               const Icon = VIEW_ICONS[type] || FileText;
               const isActive = activeView === type;
               return (

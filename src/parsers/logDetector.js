@@ -47,6 +47,20 @@ export function detectLogType(filename, firstLine) {
   return 'unknown';
 }
 
+// Sidebar/overview ordering mirrors the FMS Detective Mac app
+export const LOG_TYPE_ORDER = [
+  'topcallstats', 'event', 'access', 'clientstats', 'stats', 'scriptevent',
+  'fmdapi', 'fmodata', 'fac', 'fmscwpc', 'loadschedules', 'wpe',
+];
+
+export function sortLogTypes(entries) {
+  return [...entries].sort(([a], [b]) => {
+    const ia = LOG_TYPE_ORDER.indexOf(a);
+    const ib = LOG_TYPE_ORDER.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+}
+
 export const LOG_TYPE_LABELS = {
   event: 'Event Log',
   access: 'Access Log',
