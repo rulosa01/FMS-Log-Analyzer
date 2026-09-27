@@ -61,7 +61,7 @@ export default function OverviewView({ logData, onSelectView }) {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center shadow-sm">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -118,10 +118,10 @@ export default function OverviewView({ logData, onSelectView }) {
       {hasTroubleshooter && (
         <button
           onClick={() => onSelectView('troubleshooter')}
-          className="w-full mb-6 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-900/20 dark:to-violet-900/20 border border-blue-200 dark:border-blue-800 text-left hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group"
+          className="w-full mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-left hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/25">
+            <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
               <Link2 className="w-4.5 h-4.5 text-white" />
             </div>
             <div className="flex-1">

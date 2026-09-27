@@ -22,6 +22,13 @@ import FacView from './views/FacView.jsx';
 import FmscwpcView from './views/FmscwpcView.jsx';
 import LoadSchedulesView from './views/LoadSchedulesView.jsx';
 
+// Compact counts for the sidebar pills, e.g. 12500 -> "12.5K"
+function compactCount(n) {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+
 const VIEW_ICONS = {
   event: Activity,
   access: Users,
@@ -139,7 +146,7 @@ function App() {
       {/* Header */}
       <header className="px-5 py-3 flex items-center gap-4 shadow-sm border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0">
         <div className="flex items-center gap-2">
-          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/25" />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-8 h-8 rounded-lg shadow-sm" />
           <div>
             <h1 className="text-sm font-bold text-gray-800 dark:text-gray-100">FMS Detective Lite</h1>
           </div>
@@ -187,17 +194,20 @@ function App() {
                   onClick={() => setActiveView(type)}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
                     isActive
-                      ? `bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-lg`
+                      ? `bg-blue-500 text-white`
                       : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium truncate">{LOG_TYPE_LABELS[type]}</p>
-                    <p className={`text-[10px] ${isActive ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
-                      {data.entries.length.toLocaleString()} entries
-                    </p>
-                  </div>
+                  <p className="text-xs font-medium truncate min-w-0 flex-1">{LOG_TYPE_LABELS[type]}</p>
+                  <span
+                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                    }`}
+                    title={`${data.entries.length.toLocaleString()} entries`}
+                  >
+                    {compactCount(data.entries.length)}
+                  </span>
                 </button>
               );
             })}
@@ -211,7 +221,7 @@ function App() {
                 onClick={() => setActiveView('troubleshooter')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
                   activeView === 'troubleshooter'
-                    ? 'bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-lg'
+                    ? 'bg-blue-500 text-white'
                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
@@ -236,7 +246,7 @@ function App() {
 
           {/* Full app upsell */}
           <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="rounded-xl p-3 bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-900/20 dark:to-violet-900/20 border border-blue-100 dark:border-blue-900">
+            <div className="rounded-xl p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900">
               <p className="text-[11px] font-semibold text-gray-700 dark:text-gray-200 mb-1">Only in the Mac app</p>
               <p className="text-[10px] leading-relaxed text-gray-500 dark:text-gray-400 mb-2">
                 Log Correlation &middot; AI Assistant &middot; Activity Timeline &middot; Investigators &middot; DDR &amp; Admin API

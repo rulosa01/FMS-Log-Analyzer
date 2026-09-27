@@ -78,7 +78,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 overflow-auto transition-colors ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'}`}>
+    <div className={`min-h-screen py-8 px-4 overflow-auto transition-colors ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center relative">
@@ -88,7 +88,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-16 h-16 rounded-2xl mx-auto mb-5 shadow-lg shadow-blue-500/25" />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-16 h-16 rounded-2xl mx-auto mb-5 shadow-sm" />
           <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>FMS Detective Lite</h1>
           <p className={`mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Free, in-browser FileMaker Server log analysis &mdash; logs never leave your machine</p>
           <p className={`mt-1 text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -99,7 +99,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
         {/* Upload + About */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Upload Card */}
-          <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               <Upload size={20} className="text-blue-500" />
               Upload Log Files
@@ -156,7 +156,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               <div className="mt-3">
                 <div className={`h-2 rounded-full overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-300"
+                    className="h-full bg-blue-500 transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               className={`mt-4 w-full py-3 rounded-xl font-medium transition-all ${
                 loading || files.length === 0
                   ? darkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-500 to-violet-500 text-white hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5'
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
               }`}
             >
               {loading ? (
@@ -183,7 +183,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
           </div>
 
           {/* About Card */}
-          <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               <Heart size={20} className="text-pink-500" />
               About This Tool
@@ -197,23 +197,23 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
             <div className={`mt-4 space-y-1.5 text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               <p className={`font-medium text-sm mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Supported Log Types:</p>
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" /> Event.log &mdash; Server events, errors, schedules</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" /> Access.log &mdash; Client connections &amp; database access</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" /> TopCallStats.log &mdash; Expensive remote call analysis</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> ClientStats.log &mdash; Per-client resource usage</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" /> Stats.log &mdash; Aggregate server statistics</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" /> scriptEvent.log &mdash; Script errors &amp; FM error codes</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" /> fmdapi.log &mdash; Data API requests &amp; errors</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" /> Access.log &mdash; Client connections &amp; database access</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" /> TopCallStats.log &mdash; Expensive remote call analysis</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" /> ClientStats.log &mdash; Per-client resource usage</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" /> Stats.log &mdash; Aggregate server statistics</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" /> scriptEvent.log &mdash; Script errors &amp; FM error codes</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500 shrink-0" /> fmdapi.log &mdash; Data API requests &amp; errors</div>
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" /> fac.log &mdash; Admin Console activity &amp; system alerts</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" /> fmscwpc.log &mdash; Cloud web publishing diagnostics</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-lime-500 shrink-0" /> LoadSchedules.log &mdash; Schedule import results</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-pink-500 shrink-0" /> wpe.log, fmodata.log &mdash; Web publishing &amp; OData</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-gray-500 shrink-0" /> fmscwpc.log &mdash; Cloud web publishing diagnostics</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" /> LoadSchedules.log &mdash; Schedule import results</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" /> wpe.log, fmodata.log &mdash; Web publishing &amp; OData</div>
             </div>
 
           </div>
         </div>
 
         {/* Lite vs full app */}
-        <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
           <h2 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
             <Sparkles size={20} className="text-violet-500" />
             What&rsquo;s not in Lite
@@ -233,7 +233,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
           </div>
           <a
             href="https://fmsdetective.com/"
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-500 to-violet-500 text-white hover:shadow-lg hover:shadow-blue-500/25 transition-all"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-blue-500 text-white hover:bg-blue-600 transition-all"
           >
             Get FMS Detective for Mac &mdash; free 7-day trial
           </a>
@@ -242,7 +242,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
         {/* Privacy & Disclaimer Row */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Privacy Card */}
-          <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               <Shield size={20} className="text-emerald-500" />
               Privacy &amp; Data Storage
@@ -271,7 +271,7 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
           </div>
 
           {/* Disclaimer Card */}
-          <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               <AlertTriangle size={20} className="text-amber-500" />
               Disclaimer
@@ -290,11 +290,11 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
         </div>
 
         {/* Tips & Workflow */}
-        <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`rounded-xl shadow-sm p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
           <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>Tips &amp; Workflow</h2>
 
           {/* Workflow */}
-          <div className={`rounded-xl p-4 mb-4 ${darkMode ? 'bg-gradient-to-r from-blue-900/30 to-violet-900/30 border border-gray-700' : 'bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-100'}`}>
+          <div className={`rounded-xl p-4 mb-4 ${darkMode ? 'bg-blue-900/30 border border-blue-900' : 'bg-blue-50 border border-blue-100'}`}>
             <p className={`text-xs font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Recommended Performance Troubleshooting Workflow</p>
             <div className={`flex items-center gap-1.5 text-[11px] flex-wrap ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               <span className={`px-2 py-0.5 rounded font-medium ${darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>Stats.log</span>
