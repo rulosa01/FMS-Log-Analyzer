@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import {
-  BookOpen, Activity, Users, Zap, BarChart3, Server,
-  FileCode, Globe, FileText, Link2, ArrowRight, Shield, Cloud, Calendar,
+  AlertTriangle, Users, BarChart3, Contact, Clock, FileText, Globe,
+  Monitor, Cog, Cloud, Calendar, Stethoscope, Sparkles, ArrowRight,
 } from 'lucide-react';
 import { LOG_TYPE_LABELS, LOG_TYPE_COLORS } from '../parsers/logDetector.js';
 const formatShortDate = (d) => {
@@ -9,17 +9,18 @@ const formatShortDate = (d) => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+// Icons mirror the FMS Detective Mac app's sidebar symbols
 const VIEW_ICONS = {
-  event: Activity,
+  event: AlertTriangle,
   access: Users,
-  topcallstats: Zap,
-  clientstats: BarChart3,
-  stats: Server,
-  scriptevent: FileCode,
+  topcallstats: BarChart3,
+  clientstats: Contact,
+  stats: Clock,
+  scriptevent: FileText,
   fmdapi: Globe,
-  fmodata: Globe,
+  fmodata: Monitor,
   wpe: Globe,
-  fac: Shield,
+  fac: Cog,
   fmscwpc: Cloud,
   loadschedules: Calendar,
 };
@@ -60,17 +61,10 @@ export default function OverviewView({ logData, onSelectView }) {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center shadow-sm">
-            <BookOpen className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">FMS Log Analysis</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Select a log type below to begin analysis, or click any log in the sidebar.
-            </p>
-          </div>
-        </div>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Log Analysis &mdash; Overview</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          {logTypes.length} log type{logTypes.length === 1 ? '' : 's'} loaded
+        </p>
       </div>
 
       {/* Log type cards */}
@@ -85,57 +79,70 @@ export default function OverviewView({ logData, onSelectView }) {
             <button
               key={type}
               onClick={() => onSelectView(type)}
-              className={`group text-left p-4 rounded-xl border-l-4 ${colors.border.split(' ')[0]} bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer`}
+              className="group text-left p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all cursor-pointer"
             >
-              <div className="flex items-start gap-3">
-                <div className={`w-9 h-9 rounded-lg ${colors.light} flex items-center justify-center shrink-0`}>
-                  <Icon className={`w-4.5 h-4.5 ${colors.text}`} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{label}</h3>
-                    <ArrowRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg ${colors.light} flex items-center justify-center shrink-0`}>
+                    <Icon className={`w-4 h-4 ${colors.text}`} />
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{description}</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className={`text-xs font-medium ${colors.text}`}>
-                      {count.toLocaleString()} entries
-                    </span>
-                    {minTs && maxTs && (
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                        {formatShortDate(minTs)} — {formatShortDate(maxTs)}
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{label}</h3>
                 </div>
+                <span className={`text-xl font-bold tabular-nums shrink-0 ${colors.text}`}>
+                  {count.toLocaleString()}
+                </span>
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">{description}</p>
+              {minTs && maxTs && (
+                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-gray-400 dark:text-gray-500">
+                  <Calendar className="w-3 h-3 shrink-0" />
+                  {formatShortDate(minTs)} &ndash; {formatShortDate(maxTs)}
+                </div>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Troubleshooter callout */}
+      {/* Troubleshooter banner */}
       {hasTroubleshooter && (
         <button
           onClick={() => onSelectView('troubleshooter')}
-          className="w-full mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-left hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group"
+          className="w-full mb-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-left hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
-              <Link2 className="w-4.5 h-4.5 text-white" />
+              <Stethoscope className="w-4.5 h-4.5 text-white" />
             </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Performance Troubleshooter</h3>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Performance Troubleshooter</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Guided drill-down: identify <strong>when</strong> performance degrades (Stats) → <strong>who</strong> is responsible (ClientStats) → <strong>what</strong> operations are expensive (TopCallStats)
+                Guided drill-down: identify <strong>when</strong> performance degrades (Stats) &rarr; <strong>who</strong> is responsible (ClientStats) &rarr; <strong>what</strong> operations are expensive (TopCallStats)
               </p>
             </div>
+            <ArrowRight className="w-4 h-4 text-blue-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </button>
       )}
+
+      {/* Mac app banner */}
+      <a
+        href="https://fmsdetective.com/"
+        className="block w-full mb-6 p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 hover:shadow-md transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center shrink-0 shadow-sm">
+            <Sparkles className="w-4.5 h-4.5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Go deeper with FMS Detective for Mac</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Log Correlation &amp; root cause &middot; AI Assistant &middot; Server Activity Timeline &middot; User, Script &amp; Trigger Investigators &middot; DDR &amp; Admin API &mdash; free 7-day trial
+            </p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-violet-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+      </a>
 
     </div>
   );

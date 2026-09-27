@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import {
   FileText, Sun, Moon, Upload,
-  Activity, Users, Zap, BarChart3, Server,
-  FileCode, Globe, Link2, Shield, Cloud, Calendar,
+  AlertTriangle, Users, BarChart3, Contact, Clock,
+  Globe, Monitor, Cog, Cloud, Calendar, Stethoscope,
 } from 'lucide-react';
 import { useDarkMode } from './utils/hooks.js';
 import { LOG_TYPE_LABELS } from './parsers/logDetector.js';
@@ -29,20 +29,20 @@ function compactCount(n) {
   return String(n);
 }
 
+// Icons mirror the FMS Detective Mac app's sidebar symbols
 const VIEW_ICONS = {
-  event: Activity,
+  event: AlertTriangle,
   access: Users,
-  topcallstats: Zap,
-  clientstats: BarChart3,
-  stats: Server,
-  scriptevent: FileCode,
+  topcallstats: BarChart3,
+  clientstats: Contact,
+  stats: Clock,
+  scriptevent: FileText,
   fmdapi: Globe,
-  fmodata: Globe,
+  fmodata: Monitor,
   wpe: Globe,
-  fac: Shield,
+  fac: Cog,
   fmscwpc: Cloud,
   loadschedules: Calendar,
-  correlation: Link2,
 };
 
 function App() {
@@ -225,13 +225,8 @@ function App() {
                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                <Link2 className="w-4 h-4 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium truncate">Troubleshooter</p>
-                  <p className={`text-[10px] ${activeView === 'troubleshooter' ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
-                    Guided drill-down
-                  </p>
-                </div>
+                <Stethoscope className="w-4 h-4 shrink-0" />
+                <p className="text-xs font-medium truncate min-w-0 flex-1">Troubleshooter</p>
               </button>
             </div>
           )}
