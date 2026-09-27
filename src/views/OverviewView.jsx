@@ -43,7 +43,7 @@ const LOG_DESCRIPTIONS = {
 export default function OverviewView({ logData, onSelectView }) {
   const logTypes = useMemo(() => {
     if (!logData) return [];
-    return sortLogTypes(Object.entries(logData)).map(([type, data]) => {
+    return sortLogTypes(Object.entries(logData)).filter(([, data]) => data.entries.length > 0).map(([type, data]) => {
       const entries = data.entries;
       let minTs = null, maxTs = null;
       for (const e of entries) {

@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import {
   FileText, Sun, Moon, Upload,
   AlertTriangle, Users, BarChart3, Contact, Clock,
-  Globe, Monitor, Cog, Cloud, Calendar, Stethoscope,
+  Globe, Monitor, Cog, Cloud, Calendar, Stethoscope, LayoutGrid,
 } from 'lucide-react';
 import { useDarkMode } from './utils/hooks.js';
 import { LOG_TYPE_LABELS, sortLogTypes } from './parsers/logDetector.js';
@@ -182,10 +182,23 @@ function App() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <nav className="w-52 shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
+        <nav className="w-56 shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
+          <div className="p-3 pb-0">
+            <button
+              onClick={() => setActiveView('overview')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
+                activeView === 'overview'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4 shrink-0" />
+              <p className="text-xs font-medium truncate min-w-0 flex-1">Overview</p>
+            </button>
+          </div>
           <div className="p-3 space-y-1">
             <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 px-2 mb-2">Loaded Logs</p>
-            {sortLogTypes(Object.entries(logData)).map(([type, data]) => {
+            {sortLogTypes(Object.entries(logData)).filter(([, data]) => data.entries.length > 0).map(([type, data]) => {
               const Icon = VIEW_ICONS[type] || FileText;
               const isActive = activeView === type;
               return (
