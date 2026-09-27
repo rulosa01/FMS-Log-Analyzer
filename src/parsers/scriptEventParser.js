@@ -64,10 +64,20 @@ function parseScriptEventMessage(msg) {
   const atMatch = msg.match(/at "([^"]+)"/);
   if (atMatch) {
     const parts = atMatch[1].split(' : ').map(s => s.trim());
-    if (parts.length >= 1) result.database = parts[0];
-    if (parts.length >= 2) result.scriptName = parts[1];
-    if (parts.length >= 3) result.scriptStepNumber = parseInt(parts[2], 10) || parts[2];
-    if (parts.length >= 4) result.scriptStep = parts[3];
+    // Script names may themselves contain " : " (e.g. "Import : Daily"),
+    // which inflates the split. The step number is always the numeric
+    // second-to-last part, so anchor from the right when it is.
+    if (parts.length >= 4 && /^\d+$/.test(parts[parts.length - 2])) {
+      result.database = parts[0];
+      result.scriptName = parts.slice(1, parts.length - 2).join(' : ');
+      result.scriptStepNumber = parseInt(parts[parts.length - 2], 10);
+      result.scriptStep = parts[parts.length - 1];
+    } else {
+      if (parts.length >= 1) result.database = parts[0];
+      if (parts.length >= 2) result.scriptName = parts[1];
+      if (parts.length >= 3) result.scriptStepNumber = parseInt(parts[2], 10) || parts[2];
+      if (parts.length >= 4) result.scriptStep = parts[3];
+    }
   }
 
   return result;

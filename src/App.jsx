@@ -139,11 +139,9 @@ function App() {
       {/* Header */}
       <header className="px-5 py-3 flex items-center gap-4 shadow-sm border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center shadow-lg shadow-blue-500/25">
-            <FileText className="w-4 h-4 text-white" />
-          </div>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/25" />
           <div>
-            <h1 className="text-sm font-bold text-gray-800 dark:text-gray-100">FMS Log Analyzer</h1>
+            <h1 className="text-sm font-bold text-gray-800 dark:text-gray-100">FMS Detective Lite</h1>
           </div>
         </div>
 
@@ -234,6 +232,22 @@ function App() {
             {Object.values(logData).flatMap(d => d.filenames).map((f, i) => (
               <p key={i} className="text-[10px] text-gray-400 dark:text-gray-500 px-2 truncate">{f}</p>
             ))}
+          </div>
+
+          {/* Full app upsell */}
+          <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="rounded-xl p-3 bg-gradient-to-br from-blue-50 to-violet-50 dark:from-blue-900/20 dark:to-violet-900/20 border border-blue-100 dark:border-blue-900">
+              <p className="text-[11px] font-semibold text-gray-700 dark:text-gray-200 mb-1">Only in the Mac app</p>
+              <p className="text-[10px] leading-relaxed text-gray-500 dark:text-gray-400 mb-2">
+                Log Correlation &middot; AI Assistant &middot; Activity Timeline &middot; Investigators &middot; DDR &amp; Admin API
+              </p>
+              <a
+                href="https://fmsdetective.com/"
+                className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Get FMS Detective &rarr;
+              </a>
+            </div>
           </div>
         </nav>
 

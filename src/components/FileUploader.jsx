@@ -88,11 +88,12 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-500/25">
-            <FileText size={32} className="text-white" />
-          </div>
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>FMS Log Analyzer</h1>
-          <p className={`mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Analyze your FileMaker Server log files</p>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FMS Detective" className="w-16 h-16 rounded-2xl mx-auto mb-5 shadow-lg shadow-blue-500/25" />
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>FMS Detective Lite</h1>
+          <p className={`mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Free, in-browser FileMaker Server log analysis &mdash; logs never leave your machine</p>
+          <p className={`mt-1 text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            The free edition of <a href="https://fmsdetective.com/" className="text-blue-500 hover:text-blue-600 font-medium">FMS Detective for Mac</a>
+          </p>
         </div>
 
         {/* Upload + About */}
@@ -188,9 +189,10 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               About This Tool
             </h2>
             <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              FMS Log Analyzer is a <strong>free, open-source tool</strong> for the FileMaker community.
-              Upload your server logs and get interactive dashboards, charts, performance insights,
-              and detailed breakdowns &mdash; all processed locally in your browser.
+              FMS Detective Lite is the <strong>free, open-source edition of FMS Detective</strong>,
+              built for the FileMaker community. Upload your server logs and get interactive
+              dashboards, charts, performance insights, and detailed breakdowns &mdash; all
+              processed locally in your browser.
             </p>
 
             <div className={`mt-4 space-y-1.5 text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -223,6 +225,33 @@ export default function FileUploader({ onDataLoaded, darkMode, toggleDarkMode })
               </a>
             </div>
           </div>
+        </div>
+
+        {/* Lite vs full app */}
+        <div className={`rounded-2xl shadow-xl p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <h2 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <Sparkles size={20} className="text-violet-500" />
+            What&rsquo;s not in Lite
+          </h2>
+          <p className={`text-sm leading-relaxed mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Lite covers the day-to-day views. The full <strong>FMS Detective</strong> Mac app adds the deep diagnostic tools:
+          </p>
+          <div className={`grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> Log Correlation &amp; root cause analysis</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> AI Assistant (local or cloud models)</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> Server Activity Timeline</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> User, Script &amp; Trigger Investigators</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> DDR import &mdash; real table &amp; field names</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> Admin API connection &amp; in-app Admin Console</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> German log parsing &amp; six interface languages</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" /> Printing, CSV/TSV workflows, and more</div>
+          </div>
+          <a
+            href="https://fmsdetective.com/"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-500 to-violet-500 text-white hover:shadow-lg hover:shadow-blue-500/25 transition-all"
+          >
+            Get FMS Detective for Mac &mdash; free 7-day trial
+          </a>
         </div>
 
         {/* Privacy & Disclaimer Row */}

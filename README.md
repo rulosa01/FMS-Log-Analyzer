@@ -1,8 +1,8 @@
-# FMS Log Analyzer
+# FMS Detective Lite (FMS Log Analyzer)
 
 A client-side web application for analyzing FileMaker Server log files. Upload your logs and get interactive dashboards, charts, performance insights, and detailed breakdowns — all processed locally in your browser.
 
-**[Live Demo](https://fms-log-analyzer.vercel.app)** (coming soon)
+**[Use it free at fmsdetective.com/lite](https://fmsdetective.com/lite/)** — the free, open-source edition of [FMS Detective](https://fmsdetective.com/) for Mac
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)

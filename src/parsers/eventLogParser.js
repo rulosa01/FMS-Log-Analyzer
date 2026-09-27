@@ -16,7 +16,9 @@ export function parseEventLog(text, onProgress) {
     if (!line.trim()) continue;
 
     // Try to match a new log entry line
-    const match = line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+[+-]\d{4})\t(Information|Warning|Error)\t(\d+)\t([^\t]*)\t(.*)$/);
+    // Severity is usually Information/Warning/Error but unrecognized
+    // values are preserved rather than dropping the line
+    const match = line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+[+-]\d{4})\t([^\t]+)\t(\d+)\t([^\t]*)\t(.*)$/);
 
     if (match) {
       // Save previous entry

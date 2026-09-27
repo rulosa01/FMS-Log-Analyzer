@@ -17,7 +17,9 @@ export function parseAccessLog(text, onProgress) {
     const line = lines[i];
     if (!line.trim()) continue;
 
-    const match = line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+[+-]\d{4})\t(Information|Warning|Error)\t(\d+)\t([^\t]*)\t(.*)$/);
+    // Severity is usually Information/Warning/Error but unrecognized
+    // values are preserved rather than dropping the line
+    const match = line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+[+-]\d{4})\t([^\t]+)\t(\d+)\t([^\t]*)\t(.*)$/);
 
     if (match) {
       if (currentEntry) entries.push(currentEntry);
@@ -116,9 +118,16 @@ function parseAccessDescription(desc, eventId) {
   }
 
   // Extract IP from brackets in client name, e.g. "User (Machine) [1.2.3.4]"
+  // or an IPv6 address like "[fe80::1c2a:8f4e]". Non-address bracket tags
+  // like "[fmapp]" contain no colon or dotted quad and are ignored.
   const ipMatch = desc.match(/\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]/);
   if (ipMatch) {
     result.ip = ipMatch[1];
+  } else {
+    const v6Match = desc.match(/\[([0-9A-Fa-f:]*:[0-9A-Fa-f:.]+(?:%[\w.]+)?)\]/);
+    if (v6Match) {
+      result.ip = v6Match[1];
+    }
   }
 
   return result;

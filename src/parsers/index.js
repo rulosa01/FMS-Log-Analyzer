@@ -25,8 +25,10 @@ const PARSERS = {
 
 export async function parseLogFile(file, onProgress) {
   const rawText = await readFileText(file);
-  // Normalize \r\n (Windows/FMS) line endings to \n
-  const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // Normalize \r\n (Windows/FMS) line endings to \n and strip stray null
+  // bytes — some FMS environments emit them mid-file and they derail
+  // line matching
+  const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\u0000/g, '');
   const firstLine = text.split('\n')[0] || '';
   const logType = detectLogType(file.name, firstLine);
 
